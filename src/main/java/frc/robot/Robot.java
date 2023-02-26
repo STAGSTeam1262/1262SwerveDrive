@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
 
         tiltEncoder.setPosition(0);
         armEncoder.setPosition(0);
+        extEncoder.setPosition(0);
 
         tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
@@ -81,7 +82,7 @@ public class Robot extends TimedRobot {
         tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -575);
 
         extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,0);
-        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -65);
+        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -455);
 
         armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 3);
         armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
@@ -159,15 +160,28 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        extMotor.set(m_driver2Controller.getRightY());
-        tiltMotor.set(-m_driver2Controller.getLeftY());
 
+        double rightJoystick = m_driver2Controller.getRightY();
+        double leftJoystick = -m_driver2Controller.getLeftY();
         double arm = 0;
 
-        if (m_driver2Controller.getXButton()){
-            arm = .15;
+
+        if(Math.abs(rightJoystick) < 0.05)
+        {
+            rightJoystick = 0;
         }
-        else if( m_driver2Controller.getBButton()){
+        if(Math.abs(leftJoystick) < 0.05)
+        {
+            leftJoystick = 0;
+        }
+
+        extMotor.set(rightJoystick);
+        tiltMotor.set(leftJoystick);
+
+        if (m_driver2Controller.getBButton()){
+            arm = 0.15;
+        }
+        else if( m_driver2Controller.getXButton()){
             arm = -0.15;
         }
         else {
