@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.util.List;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -26,6 +27,7 @@ public class RobotContainer {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
     private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
+    
 
     public RobotContainer() {
         swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
@@ -35,13 +37,24 @@ public class RobotContainer {
                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-        configureButtonBindings();
+        configureButtonBindings(); 
+
+       /* ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+
+        SmartDashboard.putData("Set module", new RunCommand(() -> swerveSubsystem.setModuleStates(moduleStates)));
+       SmartDashboard.putData("Set 90", new RunCommand(() -> backLeft.setRotation(90)));
+        SmartDashboard.putData("Set 180", new RunCommand(() -> backLeft.setRotation(180))); */
     }
 
+    public void periodic(){
+        //SmartDashboard.putNumber("Encoder Speed", backLeft.getDriveVelocity());
+        //SmartDashboard.putNumber("Encoder Degrees", backLeft.getTurningPosition());
+    } 
+
+
     private void configureButtonBindings() {
-        new JoystickButton(driverJoytick, 2).onTrue(swerveSubsystem.runOnce(() -> swerveSubsystem.zeroHeading()));
-        new JoystickButton(driverJoytick, 11).onTrue(swerveSubsystem.runOnce(() -> swerveSubsystem.zeroHeading()));
-        
+        new JoystickButton(driverJoytick, 2).onTrue(swerveSubsystem.runOnce(() -> swerveSubsystem.zeroHeading()));        
     }
 
     public Command getAutonomousCommand() {
@@ -83,6 +96,5 @@ public class RobotContainer {
                 new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectory.getInitialPose())),
                 swerveControllerCommand,
                 new InstantCommand(() -> swerveSubsystem.stopModules()));
-    }
-
+       }
 }

@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -78,9 +77,10 @@ public class SwerveModule {
       }
 
     public double getAbsoluteEncoderRad() {
-        double angle = m_CANCoder.getPosition();
+        double angle = m_CANCoder.getAbsolutePosition();
         angle -= absoluteEncoderOffsetRad;
-        return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
+        angle = angle * (absoluteEncoderReversed ? -1.0 : 1.0);
+        return angle * 2 * Math.PI /360;
     }
 
     public void resetEncoders() {
@@ -97,10 +97,19 @@ public class SwerveModule {
             stop();
             return;
         }
-        state = SwerveModuleState.optimize(state, getState().angle);
+        //state = SwerveModuleState.optimize(state, getState().angle);
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     }
+
+    public void setSpeed(double speedMPS) {
+        driveMotor.set(speedMPS / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    }
+
+    public void setRotation(double Degrees) {
+        turningMotor.set(turningPidController.calculate(getTurningPosition(), Degrees * 2 * Math.PI /360));
+    }
+
 
     public void stop() {
         driveMotor.set(0);

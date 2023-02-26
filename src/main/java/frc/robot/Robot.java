@@ -5,14 +5,13 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.OIConstants;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,7 +29,8 @@ public class Robot extends TimedRobot {
 
     private CANSparkMax tiltMotor;
     private CANSparkMax extMotor;
-    private final XboxController m_driver2Controller = new XboxController(2);
+    private final XboxController m_driver2Controller = new XboxController(1);
+    private CANSparkMax armMotor;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -47,21 +47,44 @@ public class Robot extends TimedRobot {
 
         tiltMotor = new CANSparkMax(9, MotorType.kBrushless);
         extMotor = new CANSparkMax(10, MotorType.kBrushless);
+        armMotor = new CANSparkMax(11, MotorType.kBrushless);
 
         tiltMotor.restoreFactoryDefaults();
         extMotor.restoreFactoryDefaults();
+        armMotor.restoreFactoryDefaults();
+
+        tiltMotor.setIdleMode(CANSparkMax.IdleMode.kBrake); 
+        extMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        armMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        final RelativeEncoder extEncoder;
+        final RelativeEncoder tiltEncoder;
+        final RelativeEncoder armEncoder;
+
+        extEncoder = extMotor.getEncoder();
+        tiltEncoder = tiltMotor.getEncoder();
+        armEncoder = armMotor.getEncoder();
+
+        tiltEncoder.setPosition(0);
+        armEncoder.setPosition(0);
 
         tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
         extMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         extMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-        
-        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,575 );
-        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
 
-        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,72 );
-        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
+        armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        
+        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,0 );
+        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -575);
+
+        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,0);
+        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -65);
+
+        armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 3);
+        armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
 
 
     }
@@ -87,6 +110,8 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        //m_robotContainer.periodic();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
@@ -104,7 +129,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
@@ -127,14 +152,30 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
 
-        extMotor.set(m_driver2Controller.getRightY());
-        tiltMotor.set(m_driver2Controller.getLeftY());
+
 
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        extMotor.set(m_driver2Controller.getRightY());
+        tiltMotor.set(-m_driver2Controller.getLeftY());
+
+        double arm = 0;
+
+        if (m_driver2Controller.getXButton()){
+            arm = .15;
+        }
+        else if( m_driver2Controller.getBButton()){
+            arm = -0.15;
+        }
+        else {
+            arm = 0;
+        }
+
+        armMotor.set(arm);
+
     }
 
     @Override
