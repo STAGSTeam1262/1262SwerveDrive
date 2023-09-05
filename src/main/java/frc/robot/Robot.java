@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
 
-        tiltMotor = new CANSparkMax(9, MotorType.kBrushless);
+        tiltMotor = new CANSparkMax(9, MotorType.kBrushless); 
         extMotor = new CANSparkMax(10, MotorType.kBrushless);
         armMotor = new CANSparkMax(11, MotorType.kBrushless);
 
@@ -59,34 +60,28 @@ public class Robot extends TimedRobot {
 
         final RelativeEncoder extEncoder;
         final RelativeEncoder tiltEncoder;
-        final RelativeEncoder armEncoder;
 
         extEncoder = extMotor.getEncoder();
         tiltEncoder = tiltMotor.getEncoder();
-        armEncoder = armMotor.getEncoder();
 
         tiltEncoder.setPosition(0);
-        armEncoder.setPosition(0);
         extEncoder.setPosition(0);
 
-        tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        //tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        //tiltMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
 
         extMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         extMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-
-        armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
         
         tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,0 );
-        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -575);
+        tiltMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -90);
 
-        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,0);
-        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -455);
+        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,10);
+        extMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -215);
 
-        armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 3);
-        armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -2);
 
+
+        CameraServer.startAutomaticCapture();
 
     }
 
@@ -162,15 +157,15 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
 
         double rightJoystick = m_driver2Controller.getRightY();
-        double leftJoystick = -m_driver2Controller.getLeftY();
+        double leftJoystick = -m_driver2Controller.getLeftY() / 3;
         double arm = 0;
 
 
-        if(Math.abs(rightJoystick) < 0.05)
+        if(Math.abs(rightJoystick) < 0.1)
         {
             rightJoystick = 0;
         }
-        if(Math.abs(leftJoystick) < 0.05)
+        if(Math.abs(leftJoystick) < 0.1)
         {
             leftJoystick = 0;
         }
@@ -179,10 +174,16 @@ public class Robot extends TimedRobot {
         tiltMotor.set(leftJoystick);
 
         if (m_driver2Controller.getBButton()){
-            arm = 0.15;
+            arm = 0.25;
         }
         else if( m_driver2Controller.getXButton()){
-            arm = -0.15;
+            arm = -0.25;
+        }
+        else if( m_driver2Controller.getAButton()){
+            arm = -0.07;
+        }
+        else if( m_driver2Controller.getYButton()){
+            arm = 0.03;
         }
         else {
             arm = 0;

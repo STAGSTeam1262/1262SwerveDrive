@@ -15,7 +15,7 @@ public final class Constants {
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-        public static final double kPTurning = 0.55;
+        public static final double kPTurning = 0.5;
     }
 
     public static final class DriveConstants {
@@ -60,7 +60,7 @@ public final class Constants {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 165; //30
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 170; //30
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -210; // -75
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 30; //165
         public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -75; //-210
@@ -68,7 +68,7 @@ public final class Constants {
         public static final double kPhysicalMaxSpeedMetersPerSecond = 4;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond /1.5;
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond /1.5 ; //1.5
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
                 kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
@@ -76,7 +76,7 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 1.5;
+        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond /1.5 ; //1.5
         public static final double kMaxAngularSpeedRadiansPerSecond = //
                 DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
         public static final double kMaxAccelerationMetersPerSecondSquared = 5;
@@ -99,6 +99,6 @@ public final class Constants {
         public static final int kDriverRotAxis = 2;
         public static final int kDriverFieldOrientedButtonIdx = 1;
 
-        public static final double kDeadband = 0.1;
+        public static final double kDeadband = 0.2;
     }
 }
